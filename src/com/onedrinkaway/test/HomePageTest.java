@@ -21,7 +21,7 @@ public class HomePageTest extends ActivityInstrumentationTestCase2<HomePage> {
 		activity = getActivity();
 	}
 	
-	public void testLoad(){
+	public void testOnCreate(){
 		assertNotNull(activity);
 		assertTrue(activity.getSupportActionBar().getTitle().equals(R.string.app_name));
 	}
