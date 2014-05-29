@@ -1,5 +1,6 @@
 package com.onedrinkaway.test;
 
+import com.onedrinkaway.app.DrinkInfoPage;
 import com.onedrinkaway.app.ResultsPage;
 import com.onedrinkaway.app.SearchByName;
 import com.onedrinkaway.R;
@@ -8,6 +9,7 @@ import android.app.Activity;
 import android.app.Instrumentation.ActivityMonitor;
 import android.test.ActivityInstrumentationTestCase2;
 import android.widget.ListView;
+import android.widget.SearchView;
 
 public class SearchByNameTest extends
 		ActivityInstrumentationTestCase2<SearchByName> {
@@ -25,10 +27,24 @@ public class SearchByNameTest extends
 	
 	public void testOnCreate(){
 		assertNotNull(activity);
+		SearchView view = (SearchView) activity.findViewById(R.id.search_view);
+		assertNotNull(view);
+		assertTrue(view.getQueryHint().equals("Enter Name Here"));
+		assertFalse(view.isSubmitButtonEnabled());
+		assertFalse(view.isIconfiedByDefault());
+	}
+	
+	public void testOnQueryTextChange(){
+		ListView view = (ListView) activity.findViewById(R.id.list_view);
+		assertNotNull(view);
+		activity.onQueryTextChange("hello");
+		assertTrue(view.getTextFilter().equals("hello"));
+		activity.onQueryTextChange("");
+		assertTrue(view.getTextFilter().equals(""));
 	}
 	
 	public void testGoToDrinkInfoPage(){
-		ActivityMonitor monitor = getInstrumentation().addMonitor(ResultsPage.class.getName(), null, false);
+		ActivityMonitor monitor = getInstrumentation().addMonitor(DrinkInfoPage.class.getName(), null, false);
 		getInstrumentation().waitForIdleSync();
 		ListView view = (ListView) activity.findViewById(R.id.list_view);
 		try {
@@ -41,5 +57,9 @@ public class SearchByNameTest extends
 		Activity next = getInstrumentation().waitForMonitor(monitor);
 		assertNotNull(next);
 		next.finish();
+	}
+	
+	public void testOnQueryTextSubmit(){
+		assertFalse(activity.onQueryTextSubmit("Hello"));
 	}
 }
